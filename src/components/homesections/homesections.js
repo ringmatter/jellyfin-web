@@ -379,7 +379,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
         var cardLayout = false;
         return cardBuilder.getCardsHtml({
             items: items,
-            preferThumb: true,
+            preferThumb: false,
             shape: getThumbShape(),
             overlayText: false,
             showTitle: true,
@@ -658,7 +658,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
         var cardLayout = false;
         return cardBuilder.getCardsHtml({
             items: items,
-            preferThumb: true,
+            preferThumb: false,
             shape: getThumbShape(),
             overlayText: false,
             showTitle: true,

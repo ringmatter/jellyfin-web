@@ -1419,9 +1419,10 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
                 });
             } else if ("Season" == item.Type || "Episode" == item.Type) {
                 if ("Episode" !== item.Type) {
-                    isList = true;
+                    // isList = true;
+                    isList = false;
                 }
-                scrollX = "Episode" == item.Type;
+                scrollX = false; //"Episode" == item.Type;
                 if (result.Items.length < 2 && "Episode" === item.Type) {
                     return;
                 }
@@ -1441,18 +1442,36 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
                         includeParentInfoInTitle: false
                     });
                 } else if ("Season" === item.Type) {
-                    html = listView.getListViewHtml({
+                    html = cardBuilder.getCardsHtml({
                         items: result.Items,
+                        shape: "backdrop",
+                        context: "tvshows",
+                        showTitle: true,
+                        showYear: true,
+                        centerText: true,
+                        cardLayout: false
+
+                    });
+                    /*
+                    html = cardBuilder.getCardsHtml({
+                        items: result.Items,
+                        playFromHere: true,
                         showIndexNumber: false,
+                        showDetailsMenu: true,
+                        shape: getThumbShape(scrollX),
                         enableOverview: true,
+                        lazy: true,
                         imageSize: "large",
                         enableSideMediaInfo: false,
                         highlight: false,
                         action: layoutManager.tv ? "resume" : "none",
+                        showTitle: true,
+                        includeParentInfoInTitle: true,
                         infoButton: true,
                         imagePlayButton: true,
-                        includeParentInfoInTitle: false
+                        includeParentInfoInTitle: false,
                     });
+                    */
                 }
             }
 
