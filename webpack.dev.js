@@ -31,9 +31,9 @@ module.exports = merge(common, {
     ],
     devServer: {
         proxy: {
-            '!/**/*.html' : 'http://localhost:8096',
-            '!/**/*.css' : 'http://localhost:8096',
-            '!/**/*.js' : 'http://localhost:8096'
+            '!/**/*.html' : 'http://192.168.1.9:8097/jellyfin',
+            '!/**/*.css' : 'http://192.168.1.9:8097/jellyfin',
+            '!/**/*.js' : 'http://192.168.1.9:8097/jellyfin'
         }
     }
 });
