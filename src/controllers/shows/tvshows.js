@@ -231,6 +231,10 @@ define(["layoutManager", "loading", "events", "libraryBrowser", "imageLoader", "
             tabContent.querySelector(".btnSort").addEventListener("click", function (e) {
                 libraryBrowser.showSortMenu({
                     items: [{
+                        name: "OptionRandom",
+                        id: "Random"
+                    },
+                    {
                         name: Globalize.translate("OptionNameSort"),
                         id: "SortName"
                     }, {

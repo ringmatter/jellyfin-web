@@ -3,6 +3,7 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
     function getIndex(item, options) {
 
+        console.log('get index', item, options);
         if (options.index === 'disc') {
 
             return item.ParentIndexNumber == null ? '' : globalize.translate('ValueDiscNumber', item.ParentIndexNumber);
