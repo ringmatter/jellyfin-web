@@ -24,22 +24,8 @@ module.exports = merge(common, {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            appLoader: "<script>window.dashboardVersion='0.0.0';</script><script src='scripts/apploader.js?v=0.0.0' defer></script>",
             filename: 'index.html',
             template: 'index.html'
         })
-    ],
-    devServer: {
-        proxy: {
-            '!/**/*.html' : 'http://192.168.1.9:8097/jellyfin',
-            '!/**/*.css' : 'http://192.168.1.9:8097/jellyfin',
-            '!/**/*.js' : 'http://192.168.1.9:8097/jellyfin'
-        }
-        //proxy: {
-        //    '!/**/*.html' : 'http://127.0.0.1:8096',
-        //    '!/**/*.css' : 'http://127.0.0.1:8096',
-        //    '!/**/*.js' : 'http://127.0.0.1:8096'
-        // }
-
-    }
+    ]
 });
