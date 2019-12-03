@@ -612,24 +612,9 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
             hideAll(page, "btnDownload", true);
         }
 
-        try {
-            require(["focusManager"], function (focusManager) {
-                [".btnResume", ".btnPlay"].every(function (cls) {
-                    var elems = page.querySelectorAll(cls);
-
-                    for (var i = 0; i < elems.length; i++) {
-                        if (focusManager.isCurrentlyFocusable(elems[i])) {
-                            focusManager.focus(elems[i]);
-                            return false;
-                        }
-                    }
-
-                    return true;
-                });
-            });
-        } catch (e) {
-            console.log(e);
-        }
+        require(["autoFocuser"], function (autoFocuser) {
+            autoFocuser.autoFocus(page);
+        });
     }
 
     function logoImageUrl(item, apiClient, options) {
@@ -1743,6 +1728,12 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
             hideAll(page, "btnPlay", false);
             hideAll(page, "btnShuffle", false);
         }
+
+        // HACK: Call autoFocuser again because btnPlay may be hidden, but focused by reloadFromItem
+        // FIXME: Sometimes focus does not move until all (?) sections are loaded
+        require(["autoFocuser"], function (autoFocuser) {
+            autoFocuser.autoFocus(page);
+        });
     }
 
     function renderCollectionItemType(page, parentItem, type, items) {
@@ -1752,7 +1743,7 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
         html += '<h2 class="sectionTitle sectionTitle-cards">';
         html += "<span>" + type.name + "</span>";
         html += "</h2>";
-        html += '<button class="btnAddToCollection sectionTitleButton" type="button" is="paper-icon-button-light" style="margin-left:1em;"><i class="md-icon" icon="add">&#xE145;</i></button>';
+        html += '<button class="btnAddToCollection sectionTitleButton" type="button" is="paper-icon-button-light" style="margin-left:1em;"><i class="md-icon" icon="add">add</i></button>';
         html += "</div>";
         html += '<div is="emby-itemscontainer" class="itemsContainer collectionItemsContainer vertical-wrap padded-left padded-right">';
         var shape = "MusicAlbum" == type.type ? getSquareShape(false) : getPortraitShape(false);
@@ -2088,7 +2079,7 @@ define(["loading", "appRouter", "layoutManager", "connectionManager", "cardBuild
         bindAll(view, ".btnCancelTimer", "click", onCancelTimerClick);
         bindAll(view, ".btnDeleteItem", "click", onDeleteClick);
         bindAll(view, ".btnDownload", "click", onDownloadClick);
-        view.querySelector(".btnMoreCommands i").innerHTML = "&#xE5D3;";
+        view.querySelector(".btnMoreCommands i").innerHTML = "more_horiz";
         view.querySelector(".trackSelections").addEventListener("submit", onTrackSelectionsSubmit);
         view.querySelector(".btnSplitVersions").addEventListener("click", function () {
             splitVersions(self, view, apiClient, params);
