@@ -888,6 +888,7 @@
     "Monday": "星期一",
     "MoreFromValue": "更多来自 {0}",
     "MoreUsersCanBeAddedLater": "稍后可以在控制台中添加更多用户。",
+    "MoreMediaInfo": "媒体信息",
     "MoveLeft": "左移",
     "MoveRight": "右移",
     "MovieLibraryHelp": "回顾{0}电影命名指南{1}。",
@@ -1456,5 +1457,6 @@
     "LabelBaseUrlHelp": "您可以在此处添加自定义子目录，以便从更唯一的 URL 访问服务器。",
     "MoreMediaInfo": "媒体信息",
     "MusicLibraryHelp": "重播 {0}音乐命名指南{1}。",
-    "HeaderFavoritePeople": "最喜欢的人物"
+    "HeaderFavoritePeople": "最喜欢的人物",
+    "OptionRandom": "随机"
 }
