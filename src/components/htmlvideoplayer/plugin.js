@@ -27,6 +27,14 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
         return _supportsTextTracks;
     }
 
+    function supportsCanvas() {
+        return !!document.createElement('canvas').getContext;
+    }
+
+    function supportsWebWorkers() {
+        return !!window.Worker;
+    }
+
     function enableNativeTrackSupport(currentSrc, track) {
 
         if (track) {
@@ -185,6 +193,7 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
 
         var lastCustomTrackMs = 0;
         var currentClock;
+        var currentSubtitlesOctopus;
         var currentAssRenderer;
         var customTrackIndex = -1;
 
@@ -575,6 +584,19 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             return showTrackOffset;
         }
 
+        function getTextTrack() {
+            var videoElement = self._mediaElement;
+            if (videoElement) {
+                return Array.from(videoElement.textTracks)
+                    .find(function(trackElement) {
+                        // get showing .vtt textTack
+                        return trackElement.mode === 'showing';
+                    });
+            } else {
+                return null;
+            }
+        }
+
         self.setSubtitleOffset = function(offset) {
 
             var offsetValue = parseFloat(offset);
@@ -583,28 +605,15 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             if (currentAssRenderer) {
                 updateCurrentTrackOffset(offsetValue);
             } else {
-                var videoElement = self._mediaElement;
-                var mediaStreamTextTracks = getMediaStreamTextTracks(self._currentPlayOptions.mediaSource);
-
-                Array.from(videoElement.textTracks)
-                    .filter(function(trackElement) {
-                    // get showing .vtt textTacks
-                        return trackElement.mode === 'showing';
-                    })
-                    .forEach(function(trackElement) {
-
-                        var track = customTrackIndex === -1 ? null : mediaStreamTextTracks.filter(function (t) {
-                            return t.Index === customTrackIndex;
-                        })[0];
-
-                        if (track) {
-                            offsetValue = updateCurrentTrackOffset(offsetValue);
-                            setVttSubtitleOffset(trackElement, offsetValue);
-                        } else {
-                            console.log("No available track, cannot apply offset : " + offsetValue);
-                        }
-
-                    });
+                var trackElement = getTextTrack();
+                // if .vtt currently rendering
+                if (trackElement) {
+                    setTextTrackSubtitleOffset(trackElement, offsetValue);
+                } else if (currentTrackEvents) {
+                    setTrackEventsSubtitleOffset(currentTrackEvents, offsetValue);
+                } else {
+                    console.log("No available track, cannot apply offset: ", offsetValue);
+                }
             }
         };
 
@@ -620,16 +629,27 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             return relativeOffset;
         }
 
-        function setVttSubtitleOffset(currentTrack, offsetValue) {
+        function setTextTrackSubtitleOffset(currentTrack, offsetValue) {
 
             if (currentTrack.cues) {
+                offsetValue = updateCurrentTrackOffset(offsetValue);
                 Array.from(currentTrack.cues)
                     .forEach(function(cue) {
                         cue.startTime -= offsetValue;
                         cue.endTime -= offsetValue;
                     });
             }
+        }
 
+        function setTrackEventsSubtitleOffset(trackEvents, offsetValue) {
+
+            if (Array.isArray(trackEvents)) {
+                offsetValue = updateCurrentTrackOffset(offsetValue);
+                trackEvents.forEach(function(trackEvent) {
+                    trackEvent.StartPositionTicks -= offsetValue;
+                    trackEvent.EndPositionTicks -= offsetValue;
+                });
+            }
         }
 
         self.getSubtitleOffset = function() {
@@ -962,6 +982,12 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             currentClock = null;
             self._currentAspectRatio = null;
 
+            var octopus = currentSubtitlesOctopus;
+            if (octopus) {
+                octopus.dispose();
+            }
+            currentSubtitlesOctopus = null;
+
             var renderer = currentAssRenderer;
             if (renderer) {
                 renderer.setEnabled(false);
@@ -1018,12 +1044,29 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                 return;
             }
 
+            self.resetSubtitleOffset();
             var item = self._currentPlayOptions.item;
 
             destroyCustomTrack(videoElement);
             customTrackIndex = track.Index;
             renderTracksEvents(videoElement, track, item);
             lastCustomTrackMs = 0;
+        }
+
+        function renderWithSubtitlesOctopus(videoElement, track, item) {
+            var attachments = self._currentPlayOptions.mediaSource.MediaAttachments || [];
+            var options = {
+                video: videoElement,
+                subUrl: getTextTrackUrl(track, item),
+                fonts: attachments.map(i => i.DeliveryUrl),
+                workerUrl: appRouter.baseUrl() + "/libraries/subtitles-octopus-worker.js",
+                onError: function() {
+                    htmlMediaHelper.onErrorInternal(self, 'mediadecodeerror')
+                }
+            };
+            require(['JavascriptSubtitlesOctopus'], function(SubtitlesOctopus) {
+                currentSubtitlesOctopus = new SubtitlesOctopus(options);
+            });
         }
 
         function renderWithLibjass(videoElement, track, item) {
@@ -1070,6 +1113,15 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                     htmlMediaHelper.onErrorInternal(self, 'mediadecodeerror');
                 });
             });
+        }
+
+        function renderSsaAss(videoElement, track, item) {
+            if (supportsCanvas() && supportsWebWorkers()) {
+                renderWithSubtitlesOctopus(videoElement, track, item);
+            } else {
+                console.log('rendering subtitles with libjass');
+                renderWithLibjass(videoElement, track, item);
+            }
         }
 
         function onVideoResize() {
@@ -1182,7 +1234,7 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                 var format = (track.Codec || '').toLowerCase();
                 if (format === 'ssa' || format === 'ass') {
                     // libjass is needed here
-                    renderWithLibjass(videoElement, track, item);
+                    renderSsaAss(videoElement, track, item);
                     return;
                 }
 
@@ -1483,6 +1535,10 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             }
         }
 
+        if (browser.safari || browser.iOS || browser.iPad) {
+            list.push('AirPlay')
+        }
+
         list.push('SetBrightness');
         list.push("SetAspectRatio")
 
@@ -1589,6 +1645,31 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
         }
 
         return false;
+    };
+
+    HtmlVideoPlayer.prototype.isAirPlayEnabled = function () {
+
+        if (document.AirPlayEnabled) {
+            return document.AirplayElement ? true : false;
+        }
+
+        return false;
+    };
+
+    HtmlVideoPlayer.prototype.setAirPlayEnabled = function (isEnabled) {
+        var video = this._mediaElement;
+
+        if (document.AirPlayEnabled) {
+            if (video) {
+                if (isEnabled) {
+                    video.requestAirPlay().catch(onAirPlayError);
+                } else {
+                    document.exitAirPLay().catch(onAirPlayError);
+                }
+            }
+        } else {
+            video.webkitShowPlaybackTargetPicker();
+        }
     };
 
     HtmlVideoPlayer.prototype.setBrightness = function (val) {
@@ -1742,6 +1823,10 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
 
     HtmlVideoPlayer.prototype.togglePictureInPicture = function () {
         return this.setPictureInPictureEnabled(!this.isPictureInPictureEnabled());
+    };
+
+    HtmlVideoPlayer.prototype.toggleAirPlay = function () {
+        return this.setAirPlayEnabled(!this.isAirPlayEnabled());
     };
 
     HtmlVideoPlayer.prototype.getBufferedRanges = function () {
