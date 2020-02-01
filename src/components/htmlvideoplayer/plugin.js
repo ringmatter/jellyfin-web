@@ -95,23 +95,19 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
     }
 
     function getMediaStreamAudioTracks(mediaSource) {
-
         return mediaSource.MediaStreams.filter(function (s) {
             return s.Type === 'Audio';
         });
     }
 
     function getMediaStreamTextTracks(mediaSource) {
-
         return mediaSource.MediaStreams.filter(function (s) {
             return s.Type === 'Subtitle';
         });
     }
 
     function zoomIn(elem) {
-
         return new Promise(function (resolve, reject) {
-
             var duration = 240;
             elem.style.animation = 'htmlvideoplayer-zoomin ' + duration + 'ms ease-in normal';
             dom.addEventListener(elem, dom.whichAnimationEvent(), resolve, {
@@ -1058,7 +1054,9 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
             var options = {
                 video: videoElement,
                 subUrl: getTextTrackUrl(track, item),
-                fonts: attachments.map(i => i.DeliveryUrl),
+                fonts: attachments.map(function (i) {
+                    return i.DeliveryUrl;
+                }),
                 workerUrl: appRouter.baseUrl() + "/libraries/subtitles-octopus-worker.js",
                 onError: function() {
                     htmlMediaHelper.onErrorInternal(self, 'mediadecodeerror')
@@ -1405,7 +1403,6 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                         dlg.classList.add('videoPlayerContainer');
 
                         if (options.backdropUrl) {
-
                             dlg.classList.add('videoPlayerContainer-withBackdrop');
                             dlg.style.backgroundImage = "url('" + options.backdropUrl + "')";
                         }
@@ -1414,11 +1411,7 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                             dlg.classList.add('videoPlayerContainer-onTop');
                         }
 
-                        // playsinline new for iOS 10
-                        // https://developer.apple.com/library/content/releasenotes/General/WhatsNewInSafari/Articles/Safari_10_0.html
-
                         var html = '';
-
                         var cssClass = 'htmlvideoplayer';
 
                         if (!browser.chromecast) {
@@ -1429,7 +1422,6 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                         if (!appHost.supports('htmlvideoautoplay')) {
                             html += '<video class="' + cssClass + '" preload="metadata" autoplay="autoplay" controls="controls" webkit-playsinline playsinline>';
                         } else {
-
                             // Chrome 35 won't play with preload none
                             html += '<video class="' + cssClass + '" preload="metadata" autoplay="autoplay" webkit-playsinline playsinline>';
                         }
@@ -1454,7 +1446,6 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                         self._mediaElement = videoElement;
 
                         if (mediaManager) {
-
                             if (!mediaManager.embyInit) {
                                 initMediaManager();
                                 mediaManager.embyInit = true;
@@ -1470,9 +1461,7 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
                         } else {
                             resolve(videoElement);
                         }
-
                     });
-
                 } else {
                     if (options.backdropUrl) {
                         dlg.classList.add('videoPlayerContainer-withBackdrop');
@@ -1805,7 +1794,7 @@ define(['browser', 'require', 'events', 'apphost', 'loading', 'dom', 'playbackMa
     };
 
     HtmlVideoPlayer.prototype.getAspectRatio = function () {
-        return this._currentAspectRatio;
+        return this._currentAspectRatio || "auto";
     };
 
     HtmlVideoPlayer.prototype.getSupportedAspectRatios = function () {

@@ -83,7 +83,7 @@
     "Art": "Art",
     "AsManyAsPossible": "As many as possible",
     "Ascending": "Ascending",
-    "AspectRatio": "Aspect ratio",
+    "AspectRatio": "Aspect Ratio",
     "AttributeNew": "New",
     "Audio": "Audio",
     "AuthProviderHelp": "Select an Authentication Provider to be used to authenticate this user's password.",
@@ -565,7 +565,7 @@
     "ReplaceExistingImages": "Replace existing images",
     "ReplaceAllMetadata": "Replace all metadata",
     "RepeatOne": "Repeat one",
-    "RepeatMode": "Repeat mode",
+    "RepeatMode": "Repeat Mode",
     "RepeatEpisodes": "Repeat episodes",
     "RepeatAll": "Repeat all",
     "Repeat": "Repeat",
@@ -1303,7 +1303,6 @@
     "OptionEnableM2tsModeHelp": "Enable m2ts mode when encoding to mpegts.",
     "OptionEnableM2tsMode": "Enable M2ts mode",
     "OptionEnableExternalContentInSuggestions": "Enable external content in suggestions",
-    "OptionEnableAutomaticServerUpdates": "Enable automatic server updates",
     "OptionEnableAccessToAllLibraries": "Enable access to all libraries",
     "OptionEnableAccessToAllChannels": "Enable access to all channels",
     "OptionEnableAccessFromAllDevices": "Enable access from all devices",
@@ -1461,5 +1460,6 @@
     "ButtonAddImage": "Add Image",
     "OptionRandom": "Random",
     "SelectAdminUsername": "Please select a username for the admin account.",
-    "ButtonSplit": "Split"
+    "ButtonSplit": "Split",
+    "HeaderNavigation": "Navigation"
 }
