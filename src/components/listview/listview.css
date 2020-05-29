@@ -111,6 +111,10 @@
     text-overflow: ellipsis;
 }
 
+.layout-desktop .listItemBodyText {
+    margin: 0.25em 0 0 0;
+}
+
 .listItemBodyText-nowrap {
     white-space: nowrap;
 }
@@ -232,13 +236,6 @@
 
 .paperList-clear {
     background-color: transparent !important;
-}
-
-.listItemMediaInfo {
-    /* Don't display if flex not supported */
-    display: none;
-    align-items: center;
-    margin-right: 1em;
 }
 
 .listGroupHeader-first {

@@ -24,6 +24,10 @@
     padding-top: 7em !important;
 }
 
+.layout-mobile .libraryPage {
+    padding-top: 4em !important;
+}
+
 .itemDetailPage {
     padding-top: 0 !important;
 }
@@ -115,13 +119,17 @@
     display: -webkit-inline-box;
     display: -webkit-inline-flex;
     display: inline-flex;
-    margin: 0.3em 0 0 0.5em;
+    margin: 0 0 0 0.5em;
     height: 1.7em;
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
     -webkit-flex-shrink: 1;
     flex-shrink: 1;
+}
+
+.pageTitleWithDefaultLogo {
+    margin-top: 0;
 }
 
 .headerLeft,
@@ -201,6 +209,7 @@
 
 .navMenuOptionText {
     white-space: nowrap;
+    margin-top: 0.25em;
 }
 
 .sidebarHeader {
@@ -217,6 +226,13 @@
     right: 0;
     bottom: 0;
     left: 0;
+}
+
+.centerMessage {
+    margin: auto;
+    width: 30%;
+    padding: 5em 0;
+    text-align: center;
 }
 
 .layout-desktop .searchTabButton,
@@ -256,15 +272,9 @@
     }
 }
 
-@media all and (max-width: 60em) {
-    .libraryDocument .mainDrawerButton {
-        display: none;
-    }
-}
-
 @media all and (max-width: 84em) {
     .withSectionTabs .headerTop {
-        padding-bottom: 0.2em;
+        padding-bottom: 0.55em;
     }
 
     .sectionTabs {
@@ -272,7 +282,25 @@
     }
 }
 
-@media all and (min-width:84em) {
+@media all and (min-width: 84em) {
+    .headerTop {
+        padding: 0.8em 0.8em;
+    }
+
+    .headerTabs {
+        -webkit-align-self: center;
+        align-self: center;
+        width: auto;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        position: relative;
+        margin-top: -4.3em;
+    }
+
     .libraryPage:not(.noSecondaryNavPage) {
         padding-top: 4.6em !important;
     }
@@ -286,7 +314,7 @@
     }
 
     .dashboardDocument .mainDrawer-scrollContainer {
-        margin-top: 6em !important;
+        margin-top: 4.65em !important;
     }
 }
 
@@ -409,8 +437,44 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+    background-attachment: fixed;
     height: 50vh;
     position: relative;
+}
+
+.layout-mobile .itemBackdrop {
+    background-attachment: scroll;
+}
+
+.layout-desktop .itemBackdrop::after,
+.layout-tv .itemBackdrop::after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    display: block;
+}
+
+.layout-desktop .noBackdrop .itemBackdrop,
+.layout-tv .noBackdrop .itemBackdrop {
+    display: none;
+}
+
+.detailPageContent {
+    display: flex;
+    flex-direction: column;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+.layout-desktop .noBackdrop .detailPageContent,
+.layout-tv .noBackdrop .detailPageContent {
+    margin-top: 2.5em;
+}
+
+.layout-desktop .noBackdrop .detailImageContainer img,
+.layout-tv .noBackdrop .detailImageContainer img {
+    margin-top: 0;
 }
 
 .personBackdrop {
@@ -426,42 +490,90 @@
 
 .desktopMiscInfoContainer {
     position: absolute;
-    bottom: .75em
+    bottom: 0.75em;
 }
 
-.layout-mobile .detailPagePrimaryContainer {
+.parentName {
     display: block;
-    position: relative;
+    margin-bottom: 0.5em;
+}
+
+.mainDetailButtons {
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin: 1em 0;
+}
+
+.detailButton,
+.mainDetailButtons {
+    display: flex;
+    display: -webkit-box;
+    display: -webkit-flex;
+}
+
+.itemName {
+    margin: 0.5em 0;
+    font-weight: 600;
+}
+
+.nameContainer {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.itemMiscInfo {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
 }
 
 .layout-mobile .parentName,
 .layout-mobile .itemName,
 .layout-mobile .itemMiscInfo,
 .layout-mobile .mainDetailButtons {
-    display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.layout-mobile .infoText {
-    white-space: normal;
-}
-
-.layout-tv .detailPagePrimaryContainer {
-    position: relative;
+    text-align: center;
 }
 
 .detailPagePrimaryContainer {
     display: flex;
     align-items: center;
     align-content: center;
-    position: sticky;
-    top: 8%;
     z-index: 2;
 }
 
-.detailSticky {
-    background-color: #101010;
+.layout-mobile .detailPagePrimaryContainer {
+    display: block;
+    position: relative;
+    top: 0;
+}
+
+.layout-tv #itemDetailPage:not(.noBackdrop) .detailPagePrimaryContainer,
+.layout-desktop #itemDetailPage:not(.noBackdrop) .detailPagePrimaryContainer {
+    position: relative;
+    top: 0;
+    padding-left: 32.45vw;
+}
+
+.layout-desktop .detailSticky,
+.layout-tv .detailSticky {
+    margin-top: -7.2em;
+}
+
+.layout-desktop .noBackdrop .detailSticky,
+.layout-tv .noBackdrop .detailSticky {
+    margin-top: 0;
 }
 
 .infoWrapper {
@@ -470,32 +582,29 @@
 
 .infoText {
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+}
+
+.layout-mobile .infoText {
+    white-space: normal;
 }
 
 .detailPageSecondaryContainer {
     margin: 1.25em 0;
 }
 
-.detailPageContent {
-    display: flex;
-    flex-direction: column;
-    padding-left: 2%;
-    padding-right: 2%;
-}
-
 .detailImageContainer {
-    position: sticky;
-    top: 25%;
+    position: relative;
+    margin-top: -25vh;
     float: left;
-    width: 22.786458333333332vw;
+    width: 25vw;
+    z-index: 3;
 }
 
-.layout-mobile .detailImageContainer,
-.layout-tv .detailImageContainer {
-    position: relative;
+.layout-desktop .noBackdrop .detailImageContainer,
+.layout-tv .noBackdrop .detailImageContainer {
+    margin-top: 0;
 }
 
 .detailPagePrimaryContent {
@@ -503,48 +612,57 @@
 }
 
 .detailLogo {
-    width: 25em;
-    height: 9.375em;
+    width: 30vw;
+    height: 25vh;
     position: absolute;
-    top: 14.5%;
-    right: 10.5%;
-    -webkit-background-size: contain;
+    top: 10vh;
+    right: 20vw;
     background-size: contain;
 }
 
-@media all and (max-width: 87.5em) {
-    .detailLogo {
-        right: 5%;
-    }
-}
-
-@media all and (max-width: 75em) {
-    .detailLogo {
-        right: 2%;
-    }
+.noBackdrop .detailLogo {
+    display: none;
 }
 
 @media all and (max-width: 68.75em) {
     .detailLogo {
-        width: 14.91em;
-        height: 3.5em;
-        right: 5%;
-        bottom: 5%;
-        top: auto;
-        background-position: center right;
         display: none;
     }
 }
 
 .itemDetailImage {
     width: 100% !important;
-    box-shadow: 0 0.0725em 0.29em 0 rgba(0, 0, 0, 0.37);
-    -webkit-box-shadow: 0 0.0725em 0.29em 0 rgba(0, 0, 0, 0.37);
+    -webkit-box-shadow: 0 0.1em 0.5em 0 rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0.1em 0.5em 0 rgba(0, 0, 0, 0.75);
 }
 
-@media all and (max-width:62.5em) {
+div.itemDetailGalleryLink.defaultCardBackground {
+    text-align: center;
+}
+
+.itemDetailGalleryLink.defaultCardBackground {
+    height: 23vw; /* Dirty hack to get it to look somewhat square. Less than ideal. */
+}
+
+.itemDetailGalleryLink.defaultCardBackground > .material-icons {
+    font-size: 15vw;
+    margin-top: 50%;
+    transform: translateY(-50%);
+}
+
+@media all and (max-width: 62.5em) {
     .detailPageWrapperContainer {
-        position: relative
+        position: relative;
+    }
+
+    .layout-desktop .detailPageWrapperContainer,
+    .layout-tv .detailPageWrapperContainer {
+        margin-top: 7.2em;
+    }
+
+    .layout-tv #itemDetailPage:not(.noBackdrop) .detailPagePrimaryContainer,
+    .layout-desktop #itemDetailPage:not(.noBackdrop) .detailPagePrimaryContainer {
+        padding-left: 3.3%;
     }
 
     .btnPlaySimple {
@@ -558,20 +676,6 @@
     }
 }
 
-.parentName {
-    display: block;
-    margin-bottom: 0.5em;
-}
-
-.btnSyncComplete {
-    background: #673ab7 !important;
-}
-
-.btnSyncComplete i {
-    -webkit-border-radius: 100em;
-    border-radius: 100em;
-}
-
 .emby-button.detailFloatingButton {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.5) !important;
@@ -583,7 +687,7 @@
     color: rgba(255, 255, 255, 0.76);
 }
 
-.emby-button.detailFloatingButton i {
+.emby-button.detailFloatingButton .material-icons {
     font-size: 3.5em;
 }
 
@@ -613,17 +717,6 @@
     }
 }
 
-.detailButton,
-.mainDetailButtons {
-    display: flex;
-    display: -webkit-box;
-    display: -webkit-flex;
-}
-
-.itemName {
-    margin: 0.5em 0;
-}
-
 .empty {
     margin: 0;
 }
@@ -634,16 +727,6 @@
 
 .detailPageCollabsible {
     margin-top: 0;
-}
-
-.mainDetailButtons {
-    display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    margin: 1em 0;
 }
 
 .recordingFields button {
@@ -670,24 +753,24 @@
     padding: 0.5em 0.7em !important;
 }
 
-@media all and (min-width:29em) {
+@media all and (min-width: 29em) {
     .detailButton {
-        padding-left: .75em !important;
-        padding-right: .75em !important
+        padding-left: 0.75em !important;
+        padding-right: 0.75em !important;
     }
 }
 
-@media all and (min-width:32em) {
+@media all and (min-width: 32em) {
     .detailButton {
-        padding-left: .8em !important;
-        padding-right: .8em !important
+        padding-left: 0.8em !important;
+        padding-right: 0.8em !important;
     }
 }
 
-@media all and (min-width:35em) {
+@media all and (min-width: 35em) {
     .detailButton {
-        padding-left: .85em !important;
-        padding-right: .85em !important
+        padding-left: 0.85em !important;
+        padding-right: 0.85em !important;
     }
 }
 
@@ -720,7 +803,7 @@
 }
 
 .detailButton-text {
-    margin-top: .7em;
+    margin-top: 0.7em;
     font-size: 80%;
     font-weight: 400;
 }
@@ -731,13 +814,14 @@
     }
 
     .detailButtonHideonMobile {
-        display: none !important
+        display: none !important;
     }
 }
 
-@media all and (min-width:62.5em) {
+@media all and (min-width: 62.5em) {
     .headerTop {
-        padding: 0.8em 0
+        padding-left: 0.8em;
+        padding-right: 0.8em;
     }
 
     .headerTabs {
@@ -745,7 +829,7 @@
         width: auto;
         align-items: center;
         justify-content: center;
-        margin-top: -3.34em;
+        margin-top: -4.2em;
         position: relative;
     }
 
@@ -754,7 +838,7 @@
     }
 
     .personBackdrop {
-        display: none !important
+        display: none !important;
     }
 
     .mainDetailButtons {
@@ -767,17 +851,6 @@
     .editorMenuLink {
         display: none;
     }
-}
-
-.itemMiscInfo {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    align-items: center;
 }
 
 @media all and (max-width: 31.25em) {
@@ -800,6 +873,11 @@
 .detailPageWrapperContainer {
     border-spacing: 0;
     border-collapse: collapse;
+}
+
+.layout-desktop .noBackdrop .detailPageWrapperContainer,
+.layout-tv .noBackdrop .detailPageWrapperContainer {
+    margin-top: 3.8em;
 }
 
 .mediaInfoStream {
@@ -851,12 +929,9 @@
     }
 }
 
-@media all and (max-width: 75em) {
-    .listViewUserDataButtons {
-        display: flex;
-        align-items: center;
-        font-size: 65%;
-    }
+.listViewUserDataButtons {
+    display: flex;
+    align-items: center;
 }
 
 .bulletSeparator {
@@ -950,7 +1025,7 @@ div:not(.sectionTitleContainer-cards) > .sectionTitle-cards {
 }
 
 .sectionTitleTextButton > .sectionTitle {
-    margin-bottom: 0;
+    margin-bottom: 0.35em;
     margin-top: 0;
 }
 
@@ -980,7 +1055,7 @@ div:not(.sectionTitleContainer-cards) > .sectionTitle-cards {
     margin-bottom: -1em;
 }
 
-@media all and (min-height:31.25em) {
+@media all and (min-height: 31.25em) {
     .padded-right-withalphapicker {
         padding-right: 7.5%;
     }
@@ -1021,4 +1096,51 @@ div:not(.sectionTitleContainer-cards) > .sectionTitle-cards {
 
 .itemsViewSettingsContainer > .button-flat {
     margin: 0;
+}
+
+.layout-mobile #myPreferencesMenuPage {
+    padding-top: 3.75em;
+}
+
+.itemDetailsGroup {
+    margin-bottom: 1.5em;
+}
+
+.trackSelections {
+    max-width: 44em;
+}
+
+.detailsGroupItem,
+.trackSelections .selectContainer {
+    display: flex;
+    max-width: 44em;
+    margin: 0 0 0.5em !important;
+}
+
+.trackSelections .selectContainer {
+    margin: 0 0 0.3em !important;
+}
+
+.detailsGroupItem .label,
+.trackSelections .selectContainer .selectLabel {
+    cursor: default;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 6.25em;
+    margin: 0 0.6em 0 0;
+}
+
+.trackSelections .selectContainer .selectLabel {
+    margin: 0 0.2em 0 0;
+}
+
+.trackSelections .selectContainer .detailTrackSelect {
+    font-size: inherit;
+    padding: 0;
+    overflow: hidden;
+}
+
+.trackSelections .selectContainer .selectArrowContainer .selectArrow {
+    margin-top: 0;
+    font-size: 1.4em;
 }

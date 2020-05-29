@@ -4,14 +4,16 @@ define(['connectionManager', 'actionsheet', 'datetime', 'playbackManager', 'glob
     function showQualityMenu(player, btn) {
 
         var videoStream = playbackManager.currentMediaSource(player).MediaStreams.filter(function (stream) {
-            return stream.Type === "Video";
+            return stream.Type === 'Video';
         })[0];
         var videoWidth = videoStream ? videoStream.Width : null;
+        var videoHeight = videoStream ? videoStream.Height : null;
 
         var options = qualityoptions.getVideoQualityOptions({
             currentMaxBitrate: playbackManager.getMaxStreamingBitrate(player),
             isAutomaticBitrateEnabled: playbackManager.enableAutomaticBitrateDetection(player),
             videoWidth: videoWidth,
+            videoHeight: videoHeight,
             enableAuto: true
         });
 
@@ -87,15 +89,17 @@ define(['connectionManager', 'actionsheet', 'datetime', 'playbackManager', 'glob
         var currentMaxBitrate = playbackManager.getMaxStreamingBitrate(player);
 
         var videoStream = playbackManager.currentMediaSource(player).MediaStreams.filter(function (stream) {
-            return stream.Type === "Video";
+            return stream.Type === 'Video';
         })[0];
 
         var videoWidth = videoStream ? videoStream.Width : null;
+        var videoHeight = videoStream ? videoStream.Height : null;
 
         var options = qualityoptions.getVideoQualityOptions({
             currentMaxBitrate: playbackManager.getMaxStreamingBitrate(player),
             isAutomaticBitrateEnabled: playbackManager.enableAutomaticBitrateDetection(player),
             videoWidth: videoWidth,
+            videoHeight: videoHeight,
             enableAuto: true
         });
 

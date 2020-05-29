@@ -1,4 +1,4 @@
-define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdrop', 'globalize', 'require', 'appSettings'], function (appHost, userSettings, browser, events, pluginManager, backdrop, globalize, require, appSettings) {
+define(['apphost', 'userSettings', 'browser', 'events', 'backdrop', 'globalize', 'require', 'appSettings'], function (appHost, userSettings, browser, events, backdrop, globalize, require, appSettings) {
     'use strict';
 
     var themeStyleElement;
@@ -24,25 +24,25 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
 
     function getThemes() {
         return [{
-            name: "Apple TV",
-            id: "appletv"
+            name: 'Apple TV',
+            id: 'appletv'
         }, {
-            name: "Blue Radiance",
-            id: "blueradiance"
+            name: 'Blue Radiance',
+            id: 'blueradiance'
         }, {
-            name: "Dark",
-            id: "dark",
+            name: 'Dark',
+            id: 'dark',
             isDefault: true,
             isDefaultServerDashboard: true
         }, {
-            name: "Light",
-            id: "light"
+            name: 'Light',
+            id: 'light'
         }, {
-            name: "Purple Haze",
-            id: "purplehaze"
+            name: 'Purple Haze',
+            id: 'purplehaze'
         }, {
-            name: "Windows Media Center",
-            id: "wmc"
+            name: 'Windows Media Center',
+            id: 'wmc'
         }];
     }
 
@@ -91,12 +91,12 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
     function onThemeLoaded() {
         document.documentElement.classList.remove('preload');
         try {
-            var color = getComputedStyle(document.querySelector('.skinHeader')).getPropertyValue("background-color");
+            var color = getComputedStyle(document.querySelector('.skinHeader')).getPropertyValue('background-color');
             if (color) {
                 appHost.setThemeColor(color);
             }
         } catch (err) {
-            console.log('Error setting theme color: ' + err);
+            console.error('error setting theme color: ' + err);
         }
     }
 
@@ -116,8 +116,8 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
 
             var linkUrl = info.stylesheetPath;
             unloadTheme();
-            var link = document.createElement('link');
 
+            var link = document.createElement('link');
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('type', 'text/css');
             link.onload = function () {
@@ -137,6 +137,8 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
 
     function onViewBeforeShow(e) {
         if (e.detail && e.detail.type === 'video-osd') {
+            // This removes the space that the scrollbar takes while playing a video
+            document.body.classList.remove('force-scroll');
             return;
         }
 
@@ -155,6 +157,9 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
                 }
             }
         }
+        // This keeps the scrollbar always present in all pages, so we avoid clipping while switching between pages
+        // that need the scrollbar and pages that don't.
+        document.body.classList.add('force-scroll');
     }
 
     document.addEventListener('viewshow', onViewBeforeShow);
@@ -162,6 +167,7 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
     function playSound(path, volume) {
         lastSound = new Date().getTime();
         require(['howler'], function (howler) {
+            /* globals Howl */
             try {
                 var sound = new Howl({
                     src: [path],
@@ -170,7 +176,7 @@ define(['apphost', 'userSettings', 'browser', 'events', 'pluginManager', 'backdr
                 sound.play();
                 currentSound = sound;
             } catch (err) {
-                console.log('Error playing sound: ' + err);
+                console.error('error playing sound: ' + err);
             }
         });
     }
