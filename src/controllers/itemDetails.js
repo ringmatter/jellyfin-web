@@ -1414,7 +1414,6 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
                     overlayPlayButton: true,
                     allowBottomPadding: !scrollX
                 });
-<<<<<<< HEAD:src/controllers/itemdetailpage.js
             } else if ("Season" == item.Type || "Episode" == item.Type) {
                 if ("Episode" !== item.Type) {
                     // isList = true;
@@ -1422,14 +1421,6 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
                 }
                 scrollX = false; //"Episode" == item.Type;
                 if (result.Items.length < 2 && "Episode" === item.Type) {
-=======
-            } else if ('Season' == item.Type || 'Episode' == item.Type) {
-                if ('Episode' !== item.Type) {
-                    isList = true;
-                }
-                scrollX = 'Episode' == item.Type;
-                if (result.Items.length < 2 && 'Episode' === item.Type) {
->>>>>>> master:src/controllers/itemDetails.js
                     return;
                 }
 
@@ -1447,7 +1438,6 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
                         allowBottomPadding: !scrollX,
                         includeParentInfoInTitle: false
                     });
-<<<<<<< HEAD:src/controllers/itemdetailpage.js
                 } else if ("Season" === item.Type) {
                     html = cardBuilder.getCardsHtml({
                         items: result.Items,
@@ -1461,17 +1451,12 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
                     });
                     /*
                     html = cardBuilder.getCardsHtml({
-=======
-                } else if ('Season' === item.Type) {
-                    html = listView.getListViewHtml({
->>>>>>> master:src/controllers/itemDetails.js
                         items: result.Items,
                         playFromHere: true,
                         showIndexNumber: false,
                         showDetailsMenu: true,
                         shape: getThumbShape(scrollX),
                         enableOverview: true,
-<<<<<<< HEAD:src/controllers/itemdetailpage.js
                         lazy: true,
                         imageSize: "large",
                         enableSideMediaInfo: false,
@@ -1479,12 +1464,6 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
                         action: layoutManager.tv ? "resume" : "none",
                         showTitle: true,
                         includeParentInfoInTitle: true,
-=======
-                        imageSize: 'large',
-                        enableSideMediaInfo: false,
-                        highlight: false,
-                        action: layoutManager.tv ? 'resume' : 'none',
->>>>>>> master:src/controllers/itemDetails.js
                         infoButton: true,
                         imagePlayButton: true,
                         includeParentInfoInTitle: false,
