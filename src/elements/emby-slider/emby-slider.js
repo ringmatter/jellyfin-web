@@ -1,4 +1,4 @@
-define(['browser', 'dom', 'layoutManager', 'keyboardnavigation', 'css!./emby-slider', 'registerElement', 'emby-input'], function (browser, dom, layoutManager, keyboardnavigation) {
+define(['browser', 'dom', 'layoutManager', 'keyboardnavigation', 'css!./emby-slider', 'webcomponents', 'emby-input'], function (browser, dom, layoutManager, keyboardnavigation) {
     'use strict';
 
     var EmbySliderPrototype = Object.create(HTMLInputElement.prototype);
@@ -148,7 +148,7 @@ define(['browser', 'dom', 'layoutManager', 'keyboardnavigation', 'css!./emby-sli
         this.classList.add('mdl-slider');
         this.classList.add('mdl-js-slider');
 
-        if (browser.edge || browser.msie) {
+        if (browser.edge) {
             this.classList.add('slider-browser-edge');
         }
         if (!layoutManager.mobile) {
@@ -223,6 +223,7 @@ define(['browser', 'dom', 'layoutManager', 'keyboardnavigation', 'css!./emby-sli
             passive: true
         });
 
+        /* eslint-disable-next-line compat/compat */
         dom.addEventListener(this, (window.PointerEvent ? 'pointermove' : 'mousemove'), function (e) {
 
             if (!this.dragging) {
@@ -240,6 +241,7 @@ define(['browser', 'dom', 'layoutManager', 'keyboardnavigation', 'css!./emby-sli
             passive: true
         });
 
+        /* eslint-disable-next-line compat/compat */
         dom.addEventListener(this, (window.PointerEvent ? 'pointerleave' : 'mouseleave'), function () {
             sliderBubble.classList.add('hide');
             hasHideClass = true;

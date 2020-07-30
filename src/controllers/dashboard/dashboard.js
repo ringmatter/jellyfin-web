@@ -169,13 +169,7 @@ define(['datetime', 'events', 'itemHelper', 'serverNotifications', 'dom', 'globa
     function reloadSystemInfo(view, apiClient) {
         apiClient.getSystemInfo().then(function (systemInfo) {
             view.querySelector('#serverName').innerHTML = globalize.translate('DashboardServerName', systemInfo.ServerName);
-            var localizedVersion = globalize.translate('DashboardVersionNumber', systemInfo.Version);
-
-            if (systemInfo.SystemUpdateLevel !== 'Release') {
-                localizedVersion += ' ' + systemInfo.SystemUpdateLevel;
-            }
-
-            view.querySelector('#versionNumber').innerHTML = localizedVersion;
+            view.querySelector('#versionNumber').innerHTML = globalize.translate('DashboardVersionNumber', systemInfo.Version);
             view.querySelector('#operatingSystem').innerHTML = globalize.translate('DashboardOperatingSystem', systemInfo.OperatingSystem);
             view.querySelector('#architecture').innerHTML = globalize.translate('DashboardArchitecture', systemInfo.SystemArchitecture);
 
@@ -251,12 +245,6 @@ define(['datetime', 'events', 'itemHelper', 'serverNotifications', 'dom', 'globa
                 html += '<div class="sessionAppSecondaryText">' + DashboardPage.getAppSecondaryText(session) + '</div>';
                 html += '</div>';
                 html += '</div>';
-
-                if (session.TranscodingInfo && session.TranscodingInfo.Framerate) {
-                    html += '<div class="sessionTranscodingFramerate">' + session.TranscodingInfo.Framerate + ' fps</div>';
-                } else {
-                    html += '<div class="sessionTranscodingFramerate"></div>';
-                }
 
                 html += '<div class="sessionNowPlayingDetails">';
                 var nowPlayingName = DashboardPage.getNowPlayingName(session);
@@ -573,7 +561,6 @@ define(['datetime', 'events', 'itemHelper', 'serverNotifications', 'dom', 'globa
             row.querySelector('.sessionNowPlayingTime').innerHTML = DashboardPage.getSessionNowPlayingTime(session);
             row.querySelector('.sessionUserName').innerHTML = DashboardPage.getUsersHtml(session);
             row.querySelector('.sessionAppSecondaryText').innerHTML = DashboardPage.getAppSecondaryText(session);
-            row.querySelector('.sessionTranscodingFramerate').innerHTML = session.TranscodingInfo && session.TranscodingInfo.Framerate ? session.TranscodingInfo.Framerate + ' fps' : '';
             var nowPlayingName = DashboardPage.getNowPlayingName(session);
             var nowPlayingInfoElem = row.querySelector('.sessionNowPlayingInfo');
 

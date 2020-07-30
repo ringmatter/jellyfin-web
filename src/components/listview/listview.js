@@ -1,4 +1,4 @@
-define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutManager', 'globalize', 'datetime', 'apphost', 'css!./listview', 'emby-ratingbutton', 'emby-playstatebutton'], function (itemHelper, mediaInfo, indicators, connectionManager, layoutManager, globalize, datetime, appHost) {
+define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutManager', 'globalize', 'datetime', 'cardBuilder', 'css!./listview', 'emby-ratingbutton', 'emby-playstatebutton'], function (itemHelper, mediaInfo, indicators, connectionManager, layoutManager, globalize, datetime, cardBuilder) {
     'use strict';
 
     function getIndex(item, options) {
@@ -71,6 +71,7 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
     function getImageUrl(item, width) {
 
         var apiClient = connectionManager.getApiClient(item.ServerId);
+        let itemId;
 
         var options = {
             maxWidth: width * 2,
@@ -78,57 +79,48 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
         };
 
         if (item.ImageTags && item.ImageTags.Primary) {
-
             options.tag = item.ImageTags.Primary;
-            return apiClient.getScaledImageUrl(item.Id, options);
-        }
-
-        if (item.AlbumId && item.AlbumPrimaryImageTag) {
-
+            itemId = item.Id;
+        } else if (item.AlbumId && item.AlbumPrimaryImageTag) {
             options.tag = item.AlbumPrimaryImageTag;
-            return apiClient.getScaledImageUrl(item.AlbumId, options);
+            itemId = item.AlbumId;
         } else if (item.SeriesId && item.SeriesPrimaryImageTag) {
-
             options.tag = item.SeriesPrimaryImageTag;
-            return apiClient.getScaledImageUrl(item.SeriesId, options);
-
+            itemId = item.SeriesId;
         } else if (item.ParentPrimaryImageTag) {
-
             options.tag = item.ParentPrimaryImageTag;
-            return apiClient.getScaledImageUrl(item.ParentPrimaryImageItemId, options);
+            itemId = item.ParentPrimaryImageItemId;
         }
 
+        if (itemId) {
+            return apiClient.getScaledImageUrl(itemId, options);
+        }
         return null;
     }
 
     function getChannelImageUrl(item, width) {
 
         var apiClient = connectionManager.getApiClient(item.ServerId);
-
         var options = {
             maxWidth: width * 2,
             type: 'Primary'
         };
 
         if (item.ChannelId && item.ChannelPrimaryImageTag) {
-
             options.tag = item.ChannelPrimaryImageTag;
-            return apiClient.getScaledImageUrl(item.ChannelId, options);
         }
 
-        return null;
+        if (item.ChannelId) {
+            return apiClient.getScaledImageUrl(item.ChannelId, options);
+        }
     }
 
     function getTextLinesHtml(textlines, isLargeStyle) {
-
         var html = '';
 
         var largeTitleTagName = layoutManager.tv ? 'h2' : 'div';
 
-        for (var i = 0, length = textlines.length; i < length; i++) {
-
-            var text = textlines[i];
-
+        for (const [i, text] of textlines.entries()) {
             if (!text) {
                 continue;
             }
@@ -282,12 +274,12 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                     imageClass += ' itemAction';
                 }
 
-                var imageAction = playOnImageClick ? 'resume' : action;
+                var imageAction = playOnImageClick ? 'link' : action;
 
                 if (imgUrl) {
                     html += '<div data-action="' + imageAction + '" class="' + imageClass + ' lazy" data-src="' + imgUrl + '" item-icon>';
                 } else {
-                    html += '<div class="' + imageClass + '">';
+                    html += '<div class="' + imageClass + ' cardImageContainer ' + cardBuilder.getDefaultBackgroundClass(item.Name) + '">' + cardBuilder.getDefaultText(item, options);
                 }
 
                 var indicatorsHtml = '';
@@ -427,8 +419,6 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
             html += '<div class="' + cssClass + '">';
 
-            const moreIcon = 'more_vert';
-
             html += getTextLinesHtml(textlines, isLargeStyle);
 
             if (options.mediaInfo !== false) {
@@ -479,10 +469,6 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                     html += '<button is="paper-icon-button-light" class="listItemButton itemAction" data-action="addtoplaylist"><span class="material-icons playlist_add"></span></button>';
                 }
 
-                if (options.moreButton !== false) {
-                    html += '<button is="paper-icon-button-light" class="listItemButton itemAction" data-action="menu"><span class="material-icons ' + moreIcon + '"></span></button>';
-                }
-
                 if (options.infoButton) {
                     html += '<button is="paper-icon-button-light" class="listItemButton itemAction" data-action="link"><span class="material-icons info_outline"></span></button>';
                 }
@@ -496,13 +482,17 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                     var userData = item.UserData || {};
                     var likes = userData.Likes == null ? '' : userData.Likes;
 
-                    if (itemHelper.canMarkPlayed(item)) {
+                    if (itemHelper.canMarkPlayed(item) && options.enablePlayedButton !== false) {
                         html += '<button is="emby-playstatebutton" type="button" class="listItemButton paper-icon-button-light" data-id="' + item.Id + '" data-serverid="' + item.ServerId + '" data-itemtype="' + item.Type + '" data-played="' + (userData.Played) + '"><span class="material-icons check"></span></button>';
                     }
 
-                    if (itemHelper.canRate(item)) {
+                    if (itemHelper.canRate(item) && options.enableRatingButton !== false) {
                         html += '<button is="emby-ratingbutton" type="button" class="listItemButton paper-icon-button-light" data-id="' + item.Id + '" data-serverid="' + item.ServerId + '" data-itemtype="' + item.Type + '" data-likes="' + likes + '" data-isfavorite="' + (userData.IsFavorite) + '"><span class="material-icons favorite"></span></button>';
                     }
+                }
+
+                if (options.moreButton !== false) {
+                    html += '<button is="paper-icon-button-light" class="listItemButton itemAction" data-action="menu"><span class="material-icons more_vert"></span></button>';
                 }
             }
             html += '</div>';

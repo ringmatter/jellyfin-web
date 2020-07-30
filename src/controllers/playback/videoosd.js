@@ -157,7 +157,7 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             });
 
             if (!displayName) {
-                displayItem.Type;
+                displayName = displayItem.Type;
             }
 
             titleElement.innerHTML = displayName;
@@ -333,13 +333,21 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             osdPoster.innerHTML = '';
         }
 
+        let osdLockCount = 0;
+
         function showOsd() {
             slideDownToShow(headerElement);
             showMainOsdControls();
-            startOsdHideTimer();
+            if (!osdLockCount) {
+                startOsdHideTimer();
+            }
         }
 
         function hideOsd() {
+            if (osdLockCount) {
+                return;
+            }
+
             slideUpToHide(headerElement);
             hideMainOsdControls();
         }
@@ -349,6 +357,19 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
                 hideOsd();
             } else if (!currentVisibleMenu) {
                 showOsd();
+            }
+        }
+
+        function lockOsd() {
+            osdLockCount++;
+            stopOsdHideTimer();
+        }
+
+        function unlockOsd() {
+            osdLockCount--;
+            // Restart hide timer if OSD is currently visible
+            if (currentVisibleMenu && !osdLockCount) {
+                startOsdHideTimer();
             }
         }
 
@@ -1080,7 +1101,7 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
          */
         var clickedElement;
 
-        function onWindowKeyDown(e) {
+        function onKeyDown(e) {
             clickedElement = e.srcElement;
 
             var key = keyboardnavigation.getKeyName(e);
@@ -1194,12 +1215,29 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             }
         }
 
+        function onKeyDownCapture() {
+            // Restart hide timer if OSD is currently visible
+            if (currentVisibleMenu) {
+                showOsd();
+            }
+        }
+
         function onWindowMouseDown(e) {
             clickedElement = e.srcElement;
+            lockOsd();
+        }
+
+        function onWindowMouseUp() {
+            unlockOsd();
         }
 
         function onWindowTouchStart(e) {
             clickedElement = e.srcElement;
+            lockOsd();
+        }
+
+        function onWindowTouchEnd() {
+            unlockOsd();
         }
 
         function getImgUrl(item, chapter, index, maxWidth, apiClient) {
@@ -1312,9 +1350,11 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
         var headerElement = document.querySelector('.skinHeader');
         var osdBottomElement = document.querySelector('.videoOsdBottom-maincontrols');
 
+        nowPlayingPositionSlider.enableKeyboardDragging();
+        nowPlayingVolumeSlider.enableKeyboardDragging();
+
         if (layoutManager.tv) {
             nowPlayingPositionSlider.classList.add('focusable');
-            nowPlayingPositionSlider.enableKeyboardDragging();
         }
 
         view.addEventListener('viewbeforeshow', function (e) {
@@ -1325,23 +1365,35 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             try {
                 events.on(playbackManager, 'playerchange', onPlayerChange);
                 bindToPlayer(playbackManager.getCurrentPlayer());
+                /* eslint-disable-next-line compat/compat */
                 dom.addEventListener(document, window.PointerEvent ? 'pointermove' : 'mousemove', onPointerMove, {
                     passive: true
                 });
                 showOsd();
                 inputManager.on(window, onInputCommand);
-                dom.addEventListener(window, 'keydown', onWindowKeyDown, {
+                document.addEventListener('keydown', onKeyDown);
+                dom.addEventListener(document, 'keydown', onKeyDownCapture, {
                     capture: true
                 });
+                /* eslint-disable-next-line compat/compat */
                 dom.addEventListener(window, window.PointerEvent ? 'pointerdown' : 'mousedown', onWindowMouseDown, {
+                    passive: true
+                });
+                /* eslint-disable-next-line compat/compat */
+                dom.addEventListener(window, window.PointerEvent ? 'pointerup' : 'mouseup', onWindowMouseUp, {
                     passive: true
                 });
                 dom.addEventListener(window, 'touchstart', onWindowTouchStart, {
                     passive: true
                 });
+                ['touchend', 'touchcancel'].forEach((event) => {
+                    dom.addEventListener(window, event, onWindowTouchEnd, {
+                        passive: true
+                    });
+                });
             } catch (e) {
                 require(['appRouter'], function(appRouter) {
-                    appRouter.showDirect('/');
+                    appRouter.goHome();
                 });
             }
         });
@@ -1350,18 +1402,30 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
                 statsOverlay.enabled(false);
             }
 
-            dom.removeEventListener(window, 'keydown', onWindowKeyDown, {
+            document.removeEventListener('keydown', onKeyDown);
+            dom.removeEventListener(document, 'keydown', onKeyDownCapture, {
                 capture: true
             });
+            /* eslint-disable-next-line compat/compat */
             dom.removeEventListener(window, window.PointerEvent ? 'pointerdown' : 'mousedown', onWindowMouseDown, {
+                passive: true
+            });
+            /* eslint-disable-next-line compat/compat */
+            dom.removeEventListener(window, window.PointerEvent ? 'pointerup' : 'mouseup', onWindowMouseUp, {
                 passive: true
             });
             dom.removeEventListener(window, 'touchstart', onWindowTouchStart, {
                 passive: true
             });
+            ['touchend', 'touchcancel'].forEach((event) => {
+                dom.removeEventListener(window, event, onWindowTouchEnd, {
+                    passive: true
+                });
+            });
             stopOsdHideTimer();
             headerElement.classList.remove('osdHeader');
             headerElement.classList.remove('osdHeader-hidden');
+            /* eslint-disable-next-line compat/compat */
             dom.removeEventListener(document, window.PointerEvent ? 'pointermove' : 'mousemove', onPointerMove, {
                 passive: true
             });
@@ -1397,6 +1461,7 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             destroySubtitleSync();
         });
         var lastPointerDown = 0;
+        /* eslint-disable-next-line compat/compat */
         dom.addEventListener(view, window.PointerEvent ? 'pointerdown' : 'click', function (e) {
             if (dom.parentWithClass(e.target, ['videoOsdBottom', 'upNextContainer'])) {
                 return void showOsd();
@@ -1447,16 +1512,13 @@ define(['playbackManager', 'dom', 'inputManager', 'datetime', 'itemHelper', 'med
             }, options);
         }
 
-        function setVolume() {
-            playbackManager.setVolume(this.value, currentPlayer);
-        }
-
         view.querySelector('.buttonMute').addEventListener('click', function () {
             playbackManager.toggleMute(currentPlayer);
         });
-        nowPlayingVolumeSlider.addEventListener('change', setVolume);
-        nowPlayingVolumeSlider.addEventListener('mousemove', setVolume);
-        nowPlayingVolumeSlider.addEventListener('touchmove', setVolume);
+
+        nowPlayingVolumeSlider.addEventListener('input', (e) => {
+            playbackManager.setVolume(e.target.value, currentPlayer);
+        });
 
         nowPlayingPositionSlider.addEventListener('change', function () {
             var player = currentPlayer;

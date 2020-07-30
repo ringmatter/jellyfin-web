@@ -1171,7 +1171,6 @@
     "ReplaceAllMetadata": "Zastępuj wszystkie metadane",
     "ReplaceExistingImages": "Zastępuj istniejące obrazy",
     "RequiredForAllRemoteConnections": "Wymagane dla wszystkich zdalnych połączeń",
-    "RestartPleaseWaitMessage": "Czekaj na zamknięcie i ponowne uruchomienie serwera Jellyfin. To może trwać ok. jednej, dwóch minut.",
     "ResumeAt": "Wznów odtwarzanie od {0}",
     "Rewind": "Do tyłu",
     "RunAtStartup": "Uruchamiaj po starcie",
@@ -1368,7 +1367,6 @@
     "HeaderFavoriteSongs": "Ulubione utwory",
     "HeaderFavoriteVideos": "Ulubione Filmy",
     "HeaderHome": "Strona główna",
-    "HeaderRestartingServer": "Ponowne uruchamianie serwera",
     "LabelAuthProvider": "Dostawca autentykacji:",
     "LabelDynamicExternalId": "{0} Id:",
     "LabelFormat": "Format:",
@@ -1438,8 +1436,8 @@
     "LabelTranscodingFramerate": "Transkodowanie w kl/s:",
     "LabelSize": "Wielkość:",
     "LabelPleaseRestart": "Zmiany zaczną obowiązywać po ręcznym przeładowaniu klienta WWW.",
-    "LabelPlayMethod": "Meroda odtwarzania:",
-    "LabelPlayer": "Gracz:",
+    "LabelPlayMethod": "Metoda odtwarzania:",
+    "LabelPlayer": "Odtwarzacz:",
     "LabelBaseUrlHelp": "Możesz tutaj dodać niestandardowy podkatalog, aby uzyskać dostęp do serwera z bardziej unikalnego adresu URL.",
     "LabelBaseUrl": "Podstawowy adres URL:",
     "LabelBitrate": "Bitrate:",
@@ -1466,8 +1464,6 @@
     "NoCreatedLibraries": "Wygląda na to, że nie utworzyłeś jeszcze żadnych bibliotek. {0}Czy chcesz utworzyć jedną teraz?{1}",
     "LabelVideoResolution": "Rozdzielczość wideo:",
     "LabelStreamType": "Typ transmisji:",
-    "EnableFastImageFadeInHelp": "Włącz szybszą animację pojawiania się dla załadowanych obrazów",
-    "EnableFastImageFadeIn": "Szybkie pojawianie się obrazów",
     "Artist": "Artysta",
     "AlbumArtist": "Album artysty",
     "Album": "Album",
@@ -1483,5 +1479,6 @@
     "DeinterlaceMethodHelp": "Wybierz metodę usuwania przeplotu używaną podczas transkodowania.",
     "ClientSettings": "Ustawienia klienta",
     "ButtonTogglePlaylist": "Playlista",
-    "ButtonToggleContextMenu": "Więcej"
+    "ButtonToggleContextMenu": "Więcej",
+    "ButtonSyncPlay": "SyncPlay"
 }
