@@ -6,6 +6,8 @@ define(['tabbedView', 'globalize', 'require', 'emby-tabs', 'emby-button', 'emby-
             name: globalize.translate('Home')
         }, {
             name: globalize.translate('Favorites')
+        }, {
+            name: globalize.translate('Artists')
         }];
     }
 
@@ -33,6 +35,9 @@ define(['tabbedView', 'globalize', 'require', 'emby-tabs', 'emby-button', 'emby-
 
             case 1:
                 depends.push('controllers/favorites');
+                break;
+            case 2:
+                depends.push('controllers/artists');
         }
 
         var instance = this;
