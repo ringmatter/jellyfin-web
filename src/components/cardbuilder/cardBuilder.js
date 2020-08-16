@@ -1088,8 +1088,7 @@ import 'programStyles';
 
                 counts.push(childText);
 
-            } else if (item.Type === 'Genre' || item.Type === 'Studio') {
-
+            } else if (item.Type === 'Genre' || item.Type === 'Studio' || item.Type === 'Person') {
                 if (item.MovieCount) {
 
                     childText = item.MovieCount === 1 ?

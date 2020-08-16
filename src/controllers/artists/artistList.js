@@ -3,7 +3,6 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
 
 
     function loadArtists(tabContent, apiClient, user, userSettings, params) {
-        //elem.innerHTML = '<h1>Artists</h1>';
 
         function getPageData(context) {
             var key = getSavedQueryKey(context);
@@ -15,7 +14,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                     query: {
                         SortBy: 'Name',
                         SortOrder: 'Ascending',
-                        IncludeItemTypes: 'Episode',
+                        /*IncludeItemTypes: 'Person',*/
                         Recursive: true,
                         Fields: 'PrimaryImageAspectRatio,MediaSourceCount,UserData',
                         IsMissing: false,
@@ -57,12 +56,12 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
             require(['components/filterdialog/filterdialog'], function ({ default: filterDialogFactory }) {
                 var filterDialog = new filterDialogFactory({
                     query: getQuery(tabContent),
-                    mode: 'episodes',
-                    serverId: ApiClient.serverId()
+                    mode: 'artists',
+                    serverId: ApiClient.serverId(),
+                    foo: 'bar'
                 });
                 events.on(filterDialog, 'filterchange', function () {
-                    console.log('reload items');
-                    //reloadItems(tabContent);
+                    reloadItems(tabContent);
                 });
                 filterDialog.show();
             });
@@ -72,6 +71,27 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
             self.showFilterMenu();
         });
 
+        tabContent.querySelector('.btnSort').addEventListener('click', function (e) {
+            libraryBrowser.showSortMenu({
+                items: [{
+                    name: Globalize.translate("OptionRandom"),
+                    id: "Random"
+                },
+                {
+                    name: Globalize.translate("OptionNameSort"),
+                    id: "Name"
+                },
+                {
+                    name: 'Episodes',
+                    id: "EpisodeCount"
+                }],
+                callback: function () {
+                    reloadItems(tabContent);
+                },
+                query: getQuery(tabContent),
+                button: e.target
+            });
+        });
 
         function reloadItems(page) {
 
@@ -100,33 +120,61 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
             }
 
 
-            //var userId = apiClient.getCurrentUserId();
             let promise;
-
-            // promise = apiClient.getPeople(userId, query);
-
-            console.log(`query ${JSON.stringify(query)}`);
-
-            // TODO: query
-            const baseUrl = 'http://127.0.0.1:3000';
-            const index = 'artists_local';
+            const isRemote = Dashboard.getCurrentUserId() === '729241b43c7245d59e3f74f99cabeddf';
+            const baseUrl = isRemote ? 'http://192.168.1.132:32226' : 'http://127.0.0.1:3000';
+            let index = isRemote ? 'artists_remote' : 'artists_local';
             const searchUrl = `${baseUrl}/${index}/_search`;
+            console.log("Query", query);
+            console.log(`Url ${searchUrl}`);
+            const sortOrder = query.SortOrder === 'Ascending' ? 'asc' : 'desc';
+            const noKeywordSort = ['EpisodeCount'];
+            const sortPostFix = noKeywordSort.indexOf(query.SortBy) === -1 ? '.keyword' : '';
             const body = {
                 size: 100,
                 from : query.StartIndex,
                 sort : {
-                    "Name.keyword": {"order": "asc"}
+                    [`${query.SortBy}${sortPostFix}`]: {"order": sortOrder}
                 }
             };
+
+            if (query.Filters) {
+                const filters = query.Filters.split(',');
+                console.log('filters', filters);
+
+                if (filters.indexOf('IsFavorite') > -1) {
+
+                    if (!body.query) {
+                        body.query = {};
+                    }
+
+                    body.query = { term: {"UserData.IsFavorite" : true }};
+
+                }
+            }
+            console.log(body);
             const headers = {
                 'Content-Type': 'application/json'
             };
 
+            const BlurHashes = ['Backdrop', 'Primary', 'Banner'];
+
             promise = fetch(searchUrl, {method: 'POST', body: JSON.stringify(body), headers})
             .then(response => response.json())
             .then(data => {
-                console.log('done');
-                const items = data.hits.hits.map(hit => hit._source);
+                const items = data.hits.hits.map(hit => {
+
+                    const doc = hit._source;
+                    if (doc.ImageBlurHashes) {
+                        BlurHashes.forEach(hashKey => {
+                            if (doc.ImageBlurHashes[hashKey]) {
+                                const blur = doc.ImageBlurHashes[hashKey][0];
+                                doc.ImageBlurHashes[hashKey] = {[blur.k] : blur.v};
+                            }
+                        });
+                    }
+                    return hit._source
+                });
                 const result = {
                     Items: items,
                     TotalRecordCount: data.hits.total.value
@@ -143,6 +191,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                 var html;
                 var cardLayout = false;
 
+                console.log('items', result.Items);
                 html = cardBuilder.getCardsHtml({
                     items: result.Items,
                     preferThumb: false,
@@ -150,6 +199,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                     overlayText: false,
                     showTitle: true,
                     showParentTitle: true,
+                    showItemCounts: true,
                     lazy: true,
                     overlayPlayButton: true,
                     context: 'home',

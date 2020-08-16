@@ -730,6 +730,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
             shape: "portrait",
             overlayText: false,
             showTitle: true,
+            showItemCounts: true,
             showParentTitle: true,
             lazy: true,
             overlayPlayButton: true,
@@ -790,7 +791,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
             html += '<h2 class="sectionTitle sectionTitle-cards">';
             html += globalize.translate('Random');
             html += '</h2>';
-            html += '<i class="md-icon">chevron_right</i>';
+            html += '<i class="material-icons chevron_right"></i>';
             html += '</a>';
         } else {
             html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('HeaderNextUp') + '</h2>';
@@ -829,7 +830,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
             html += '<h2 class="sectionTitle sectionTitle-cards">';
             html += globalize.translate('Random pornstar');
             html += '</h2>';
-            html += '<i class="md-icon">chevron_right</i>';
+            html += '<i class="material-icons chevron_right"></i>';
             html += '</a>';
         } else {
             html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('HeaderNextUp') + '</h2>';
