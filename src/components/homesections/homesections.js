@@ -142,6 +142,10 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
             loadNextUp(elem, apiClient, userId);
         } else if (section === 'onnow' || section === 'livetv') {
             return loadOnNow(elem, apiClient, user);
+        } else if (section === 'random') {
+            return loadRandom(elem, apiClient, userId);
+        } else if (section === 'randomPerson') {
+            return loadRandomPerson(elem, apiClient, userId);
         } else {
             elem.innerHTML = '';
             return Promise.resolve();
@@ -401,7 +405,7 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
         var cardLayout = false;
         return cardBuilder.getCardsHtml({
             items: items,
-            preferThumb: true,
+            preferThumb: false,
             shape: getThumbShape(),
             overlayText: false,
             showTitle: true,
@@ -676,14 +680,57 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
         };
     }
 
+    function getRandomFetchFn(serverId) {
+        return function () {
+            var apiClient = connectionManager.getApiClient(serverId);
+            return apiClient.getItems(apiClient.getCurrentUserId(), {
+                Limit: enableScrollX() ? 24 : 15,
+                Fields: "PrimaryImageAspectRatio,SeriesInfo,DateCreated,BasicSyncInfo",
+                SortBy: "Random",
+                EnableImageTypes: "Primary,Backdrop,Banner,Thumb",
+                IncludeItemTypes: 'Episode',
+                Recursive: true
+            });
+        };
+    }
+
+    function getRandomPersonFetchFn(serverId) {
+        return function () {
+            var apiClient = connectionManager.getApiClient(serverId);
+            return apiClient.getPeople(apiClient.getCurrentUserId(), {
+                Limit: 100,
+                SortBy: "Random"
+            });
+        };
+    }
+
     function getNextUpItemsHtml(items) {
         var cardLayout = false;
         return cardBuilder.getCardsHtml({
             items: items,
-            preferThumb: true,
+            preferThumb: false,
             shape: getThumbShape(),
             overlayText: false,
             showTitle: true,
+            showParentTitle: true,
+            lazy: true,
+            overlayPlayButton: true,
+            context: 'home',
+            centerText: !cardLayout,
+            allowBottomPadding: !enableScrollX(),
+            cardLayout: cardLayout
+        });
+    }
+
+    function getRandomPersonHtml(items) {
+        var cardLayout = false;
+        return cardBuilder.getCardsHtml({
+            items: items,
+            preferThumb: false,
+            shape: "portrait",
+            overlayText: false,
+            showTitle: true,
+            showItemCounts: true,
             showParentTitle: true,
             lazy: true,
             overlayPlayButton: true,
@@ -730,6 +777,84 @@ define(['connectionManager', 'cardBuilder', 'appSettings', 'dom', 'apphost', 'la
         var itemsContainer = elem.querySelector('.itemsContainer');
         itemsContainer.fetchData = getNextUpFetchFn(apiClient.serverId());
         itemsContainer.getItemsHtml = getNextUpItemsHtml;
+        itemsContainer.parentContainer = elem;
+    }
+
+    function loadRandom(elem, apiClient, userId) {
+        var html = '';
+
+        html += '<div class="sectionTitleContainer sectionTitleContainer-cards padded-left">';
+        if (!layoutManager.tv) {
+            html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('nextup', {
+                serverId: apiClient.serverId()
+            }) + '" class="button-flat button-flat-mini sectionTitleTextButton">';
+            html += '<h2 class="sectionTitle sectionTitle-cards">';
+            html += globalize.translate('Random');
+            html += '</h2>';
+            html += '<i class="material-icons chevron_right"></i>';
+            html += '</a>';
+        } else {
+            html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('HeaderNextUp') + '</h2>';
+        }
+        html += '</div>';
+
+        if (enableScrollX()) {
+            html += '<div is="emby-scroller" class="padded-top-focusscale padded-bottom-focusscale" data-mousewheel="false" data-centerfocus="true">';
+            html += '<div is="emby-itemscontainer" class="itemsContainer scrollSlider focuscontainer-x" data-monitor="videoplayback,markplayed">'
+        } else {
+            html += '<div is="emby-itemscontainer" class="itemsContainer padded-left padded-right vertical-wrap focuscontainer-x" data-monitor="videoplayback,markplayed">';
+        }
+
+        if (enableScrollX()) {
+            html += '</div>';
+        }
+        html += '</div>';
+
+        elem.classList.add('hide');
+        elem.innerHTML = html;
+
+        var itemsContainer = elem.querySelector('.itemsContainer');
+        itemsContainer.fetchData = getRandomFetchFn(apiClient.serverId());
+        itemsContainer.getItemsHtml = getNextUpItemsHtml;
+        itemsContainer.parentContainer = elem;
+    }
+
+    function loadRandomPerson(elem, apiClient, userId) {
+        var html = '';
+
+        html += '<div class="sectionTitleContainer sectionTitleContainer-cards padded-left">';
+        if (!layoutManager.tv) {
+            html += '<a is="emby-linkbutton" href="' + appRouter.getRouteUrl('nextup', {
+                serverId: apiClient.serverId()
+            }) + '" class="button-flat button-flat-mini sectionTitleTextButton">';
+            html += '<h2 class="sectionTitle sectionTitle-cards">';
+            html += globalize.translate('Random pornstar');
+            html += '</h2>';
+            html += '<i class="material-icons chevron_right"></i>';
+            html += '</a>';
+        } else {
+            html += '<h2 class="sectionTitle sectionTitle-cards">' + globalize.translate('HeaderNextUp') + '</h2>';
+        }
+        html += '</div>';
+
+        if (enableScrollX()) {
+            html += '<div is="emby-scroller" class="padded-top-focusscale padded-bottom-focusscale" data-mousewheel="false" data-centerfocus="true">';
+            html += '<div is="emby-itemscontainer" class="itemsContainer scrollSlider focuscontainer-x" data-monitor="videoplayback,markplayed">'
+        } else {
+            html += '<div is="emby-itemscontainer" class="itemsContainer padded-left padded-right vertical-wrap focuscontainer-x" data-monitor="videoplayback,markplayed">';
+        }
+
+        if (enableScrollX()) {
+            html += '</div>';
+        }
+        html += '</div>';
+
+        elem.classList.add('hide');
+        elem.innerHTML = html;
+
+        var itemsContainer = elem.querySelector('.itemsContainer');
+        itemsContainer.fetchData = getRandomPersonFetchFn(apiClient.serverId());
+        itemsContainer.getItemsHtml = getRandomPersonHtml;
         itemsContainer.parentContainer = elem;
     }
 

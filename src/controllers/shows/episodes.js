@@ -188,8 +188,12 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
             tabContent.querySelector('.btnSort').addEventListener('click', function (e) {
                 libraryBrowser.showSortMenu({
                     items: [{
-                        name: globalize.translate('OptionNameSort'),
-                        id: 'SeriesSortName,SortName'
+                        name: Globalize.translate("OptionRandom"),
+                        id: "Random"
+                    },
+                    {
+                        name: Globalize.translate("OptionNameSort"),
+                        id: "SeriesSortName,SortName"
                     }, {
                         name: globalize.translate('OptionTvdbRating'),
                         id: 'CommunityRating,SeriesSortName,SortName'

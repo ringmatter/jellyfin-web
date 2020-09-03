@@ -163,6 +163,7 @@ import 'css!./style.css';
              * @private
              */
             this.options = options;
+            console.log('filter', options);
         }
 
         /**
