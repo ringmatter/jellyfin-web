@@ -67,7 +67,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(item)
                 };
-                fetch('http://127.0.0.1:5000/preview', params).then(res => res.json()).then(data => {
+                fetch('http://nas.dubture.local/flask/preview', params).then(res => res.json()).then(data => {
                     console.log(data);
                     if(!data.target) {
                         document.getElementById('target_path').innerHTML = 'Target path does not exist';
@@ -118,7 +118,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(item)
                 };
-                fetch('http://127.0.0.1:5000/move', params).then(res => res.json()).then(data => {
+                fetch('http://nas.dubture.local/flask/move', params).then(res => res.json()).then(data => {
                     alert('posted');
                 });
 
@@ -130,7 +130,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(item)
                 };
-                fetch('http://127.0.0.1:5000/create_target_path', params).then(res => res.json()).then(data => {
+                fetch('http://nas.dubture.local/flask/create_target_path', params).then(res => res.json()).then(data => {
                     alert('Created');
                 });
 
