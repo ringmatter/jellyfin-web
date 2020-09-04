@@ -21,4 +21,64 @@
             </div>
        </div>
     </div>
+    <div class="tabContent pageTabContent" id="downloadsTab" data-index="3">
+        <style>
+            #downloadDetail input {
+                width: 100%
+            }
+
+            #downloadDetail {
+                position: fixed;
+                right: 67px;
+                top: 200px;
+                width: 530px;
+            }
+            #downloadForm {
+                width: 100% !important;
+            }
+        </style>
+        <div class="sections" id="downloads" style="float: left;">
+            <div is="emby-itemscontainer" class="itemsContainer vertical-wrap padded-left padded-right">
+            </div>
+        </div>
+        <div id="downloadDetail" class="itemsContainer" style="float: right; width: 40%;">
+            <form id="downloadForm">
+
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">Image search</h2>
+                    <a target="_blank" id="bing_link" is="emby-linkbutton" rel="noopener noreferrer" class="raised button-alt headerHelpButton emby-button" target="_blank" href="https://docs.jellyfin.org/general/server/transcoding.html">Bing</a>
+                </div>
+
+                <div class="inputContainer">
+                    <div style="display: flex; align-items: center;">
+                        <div style="flex-grow:1;">
+                            <label class="inputLabel inputLabelUnfocused" for="target">Target path</label>
+                            <input class="emby-input" type="text" name="target" id="target_field" disabled="disabled"/>
+                        </div>
+                        <button style="margin-top: 22px;" class="fab sectionTitleButton emby-button" type="button" id="create_target_path">
+                            <span class="material-icons add"></span>
+                        </button>
+                    </div>
+                    <div class="fieldDescription" id="target_path">Target path of the final scene</div>
+                </div>
+                <div class="inputContainer" style="display: none;">
+                    <label class="inputLabel inputLabelUnfocused" for="id">Id</label>
+                    <input class="emby-input" type="text" name="id" id="id_field" disabled="disabled"/>
+                </div>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="actors">Actors</label>
+                    <input is="emby-input" autocomplete="off" class="emby-input" type="text" name="actors" id="actors_field"/>
+                </div>
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="image">Image link</label>
+                    <input class="emby-input" type="text" name="image" id="image_field"/>
+                </div>
+                <div>
+                    <button class="raised button-submit block emby-button" id="submitButton" type="submit">Submit</button>
+                </div>
+                <pre id="debug"></pre>
+            </form>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
 </div>
