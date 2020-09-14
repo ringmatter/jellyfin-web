@@ -862,6 +862,7 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
     }
 
     function renderOverview(page, item) {
+
         for (const overviewElemnt of page.querySelectorAll('.overview')) {
             var overview = item.Overview || '';
 
@@ -1037,6 +1038,17 @@ define(['loading', 'appRouter', 'layoutManager', 'connectionManager', 'userSetti
         renderLinks(page, item);
         renderTags(page, item);
         renderSeriesAirTime(page, item, isStatic);
+        renderNzbs(page, item);
+    }
+
+    function renderNzbs(page, item) {
+        console.log('type', item.Type);
+        if (item.Type !== 'Person') {
+            return;
+        }
+        require(['components/nzbs/nzbList'], function (nzbList) {
+            nzbList.render(document.getElementById('nzbTable'), item);
+        });
     }
 
     function enableScrollX() {

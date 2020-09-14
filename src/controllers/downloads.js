@@ -35,10 +35,7 @@ define(['userSettings', 'loading', 'connectionManager', 'apphost', 'layoutManage
                 if (options.autoFocus) {
                     focusManager.autoFocus(view);
                 }
-                console.log('done out');
                 var container = view.querySelector('.itemsContainer');
-                console.log(container);
-
                 loading.hide();
             });
         });

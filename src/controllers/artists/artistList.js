@@ -84,6 +84,10 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                 {
                     name: 'Episodes',
                     id: "EpisodeCount"
+                },
+                {
+                    name: 'Nzbs',
+                    id: "nzbCount"
                 }],
                 callback: function () {
                     reloadItems(tabContent);
@@ -96,6 +100,7 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
         function reloadItems(page) {
 
             var query = getQuery(page);
+            console.log('query', query);
 
             function onNextPageClick() {
                 if (isLoading) {
@@ -121,26 +126,24 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
 
 
             let promise;
-            const isRemote = Dashboard.getCurrentUserId() === '729241b43c7245d59e3f74f99cabeddf';
-            const baseUrl = isRemote ? 'http://192.168.1.132:32226' : 'http://127.0.0.1:3000';
-            let index = isRemote ? 'artists_remote' : 'artists_local';
+            // const isRemote = Dashboard.getCurrentUserId() === '729241b43c7245d59e3f74f99cabeddf';
+            // const baseUrl = isRemote ? 'http://192.168.1.132:32226' : 'http://127.0.0.1:3000';
+            const baseUrl = 'http://192.168.1.132:32226';
+            let index = "actors_index"; // isRemote ? 'artists_remote' : 'artists_local';
             const searchUrl = `${baseUrl}/${index}/_search`;
-            console.log("Query", query);
-            console.log(`Url ${searchUrl}`);
             const sortOrder = query.SortOrder === 'Ascending' ? 'asc' : 'desc';
-            const noKeywordSort = ['EpisodeCount'];
+            const noKeywordSort = ['EpisodeCount', 'nzbCount'];
             const sortPostFix = noKeywordSort.indexOf(query.SortBy) === -1 ? '.keyword' : '';
             const body = {
                 size: 100,
-                from : query.StartIndex,
-                sort : {
-                    [`${query.SortBy}${sortPostFix}`]: {"order": sortOrder}
+                from: query.StartIndex,
+                sort: {
+                    [`${query.SortBy}${sortPostFix}`]: { "order": sortOrder }
                 }
             };
 
             if (query.Filters) {
                 const filters = query.Filters.split(',');
-                console.log('filters', filters);
 
                 if (filters.indexOf('IsFavorite') > -1) {
 
@@ -148,50 +151,59 @@ define(['loading', 'events', 'libraryBrowser', 'imageLoader', 'listView', 'cardB
                         body.query = {};
                     }
 
-                    body.query = { term: {"UserData.IsFavorite" : true }};
+                    body.query = { term: { "UserData.IsFavorite": true } };
 
                 }
+                if (filters.indexOf('isDuplicate') > -1) {
+
+                    if (!body.query) {
+                        body.query = {};
+                    }
+
+                    body.query = { range: { "duplicateCount": { gte: 1 } } };
+
+                }
+
             }
-            console.log(body);
             const headers = {
                 'Content-Type': 'application/json'
             };
 
             const BlurHashes = ['Backdrop', 'Primary', 'Banner'];
 
-            promise = fetch(searchUrl, {method: 'POST', body: JSON.stringify(body), headers})
-            .then(response => response.json())
-            .then(data => {
-                const items = data.hits.hits.map(hit => {
+            promise = fetch(searchUrl, { method: 'POST', body: JSON.stringify(body), headers })
+                .then(response => response.json())
+                .then(data => {
+                    const items = data.hits.hits.map(hit => {
 
-                    const doc = hit._source;
-                    if (doc.ImageBlurHashes) {
-                        BlurHashes.forEach(hashKey => {
-                            if (doc.ImageBlurHashes[hashKey]) {
-                                const blur = doc.ImageBlurHashes[hashKey][0];
-                                doc.ImageBlurHashes[hashKey] = {[blur.k] : blur.v};
-                            }
-                        });
-                    }
-                    return hit._source
-                });
-                const result = {
-                    Items: items,
-                    TotalRecordCount: data.hits.total.value
-                };
-                return Promise.resolve(result);
-            }).catch(errr => {
-                console.error(errr);
-            })
+                        const doc = hit._source;
+                        if (doc.ImageBlurHashes) {
+                            BlurHashes.forEach(hashKey => {
+                                if (doc.ImageBlurHashes[hashKey]) {
+                                    // const blur = doc.ImageBlurHashes[hashKey][0];
+                                    const blur = doc.ImageBlurHashes[hashKey];
+                                    doc.ImageBlurHashes[hashKey] = { [blur.k]: blur.v };
+                                }
+                            });
+                        }
+                        return hit._source
+                    });
+                    const result = {
+                        Items: items,
+                        TotalRecordCount: data.hits.total.value
+                    };
+                    return Promise.resolve(result);
+                }).catch(errr => {
+                    console.error(errr);
+                })
 
-            return promise.then(function(result) {
+            return promise.then(function (result) {
 
                 var itemsContainer = page.querySelector('.itemsContainer');
 
                 var html;
                 var cardLayout = false;
 
-                console.log('items', result.Items);
                 html = cardBuilder.getCardsHtml({
                     items: result.Items,
                     preferThumb: false,

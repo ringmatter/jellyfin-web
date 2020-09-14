@@ -307,7 +307,5 @@ define(['appRouter', 'cardBuilder', 'dom', 'globalize', 'connectionManager', 'ap
         this.sectionsContainer = null;
     };
 
-    alert('favorites');
-
     return FavoritesTab;
 });

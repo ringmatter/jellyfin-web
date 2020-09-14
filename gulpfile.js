@@ -112,7 +112,7 @@ const pipelineJavascript = lazypipe()
             presets: [
                 ['@babel/preset-env']
             ]
-        });
+        }).on('error', err => console.error(err));
     })
     .pipe(function () {
         return terser({
